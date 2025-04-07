@@ -1,0 +1,25 @@
+# Node Modules
+node_modules/
+
+# Environment Variables
+.env
+
+# Build
+dist/
+
+# Logs
+logs/
+
+# Temp
+temp/
+
+# ds store
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Package Lock
+package-lock.json
+pnpm-lock.yaml
