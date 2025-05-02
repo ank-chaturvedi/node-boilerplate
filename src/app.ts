@@ -1,5 +1,4 @@
-import express, { json } from "express";
-import morgan from "morgan";
+import { Hono } from "hono";
 
 import setupSwagger from "./swagger";
 import logger from "./utils/logger";
@@ -7,33 +6,15 @@ import ApiError from "./utils/api-error";
 import { sendErrorApiResponse } from "./utils/api-response";
 import routes from "./routes";
 
-const app = express();
-
-app.use(json());
+// const app = express();
+const app = new Hono();
+// app.use(json()); // no need to use json middleware as we are using hono
 //Setting up Swagger
 setupSwagger(app);
 
-// Logging APIs Information using Morgan
-const morganFormat = ":method :url :status :response-time ms";
-app.use(
-  morgan(morganFormat, {
-    stream: {
-      write: (message) => {
-        const logObject = {
-          method: message.split(" ")[0],
-          url: message.split(" ")[1],
-          status: message.split(" ")[2],
-          responseTime: message.split(" ")[3],
-        };
-        logger.info(JSON.stringify(logObject));
-      },
-    },
-  }),
-);
+app.route("/api/v1", routes);
 
-app.use("/api/v1", routes);
-
-app.use((error, req, res, next) => {
+app.onError((error, c) => {
   logger.error(error);
   console.log(error);
   let apiError: ApiError;
@@ -42,7 +23,7 @@ app.use((error, req, res, next) => {
   } else {
     apiError = error;
   }
-  sendErrorApiResponse(res, {
+  return sendErrorApiResponse(c, {
     statusCode: apiError.statusCode,
     message: apiError.message,
     errors: apiError.errors,

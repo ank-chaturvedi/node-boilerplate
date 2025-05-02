@@ -1,8 +1,8 @@
-import express from "express";
 import testRoutes from "./test";
+import { Hono } from "hono";
 
-const routes = express.Router();
+const routes = new Hono();
 
-routes.use(testRoutes);
+routes.route("/test", testRoutes);
 
 export default routes;

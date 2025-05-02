@@ -1,15 +1,15 @@
+import { Context } from "hono";
 import { sendSuccessApiResponse } from "./api-response";
 
-const asyncResponseHandler = (fun) => {
-  return (req, res, next) => {
-    Promise.resolve(fun(req, res))
-      .then((result) => {
-        return sendSuccessApiResponse(res, result);
-      })
-      .catch((error) => {
-        console.error(error);
-        next(error);
-      });
+const asyncResponseHandler = (fun: (c: Context, next) => Promise<any>) => {
+  return async (c: Context, next) => {
+    try {
+      const result = await fun(c, next);
+      return sendSuccessApiResponse(c, result);
+    } catch (error) {
+      console.error(error);
+      return await next(error);
+    }
   };
 };
 

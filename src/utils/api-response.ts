@@ -1,31 +1,26 @@
 import { Response } from "express";
 
 import { IErrorApiResponse, ISuccessApiResponse } from "../types/api-response";
+import { Context } from "hono";
 
 export const sendSuccessApiResponse = (
-  res: Response,
+  c: Context,
   successResponse: ISuccessApiResponse,
 ) => {
-  const prettyPrint = successResponse.prettyPrint;
-  const response = {
+  c.set("status", successResponse.statusCode);
+  return c.json({
     success: true,
     message: successResponse.message,
     data: successResponse.data,
-  };
-  
-  if (prettyPrint) {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(successResponse.statusCode).send(JSON.stringify(response, null, 2));
-  } else {
-    res.status(successResponse.statusCode).json(response);
-  }
+  });
 };
 
 export const sendErrorApiResponse = (
-  res: Response,
+  c: Context,
   errorResponse: IErrorApiResponse,
 ) => {
-  res.status(errorResponse.statusCode).json({
+  c.set("status", errorResponse.statusCode);
+  return c.json({
     success: false,
     message: errorResponse.message,
     errors: errorResponse.errors,

@@ -3,10 +3,13 @@ dotenv.config();
 
 import app from "./app";
 import http from "http";
+import { serve } from "@hono/node-server";
 import CONFIG from "./config";
 
-const server = http.createServer(app);
 
-server.listen(CONFIG.PORT, () => {
-  console.log(`Server is started on port ${CONFIG.PORT}`);
+serve({
+  fetch: app.fetch,
+  port: CONFIG.PORT,
+}, (info) => {
+  console.log(`Server is started on port ${info.port}`);
 });

@@ -1,8 +1,8 @@
-import express from "express";
+import { Hono } from "hono";
 import asyncResponseHandler from "../utils/async-handler";
 import { ping } from "../controllers/test.controller";
 
-const router = express.Router();
+const router = new Hono();
 
 router.get("/ping", asyncResponseHandler(ping));
 
